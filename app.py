@@ -55,6 +55,12 @@ def retrieve_relevant_knowledge(lab_results, knowledge_base):
     
     return relevant_knowledge
 
+# Azure OpenAI with Business Associate Agreement - Microsoft signs BAA, data stays in healthcare-compliant cloud
+# De-identification before sending to LLM - strip names, DOB, MRN
+# Encryption in transit and at rest - TLS 1.3, AES-256
+# Audit logs - track every data access
+# No Patient Health Informaition retention - LLM doesn't store patient data
+
 def analyze_labs_with_gpt(lab_data):
     """
     FULL RAG PIPELINE:
@@ -67,6 +73,16 @@ def analyze_labs_with_gpt(lab_data):
     knowledge_base = load_medical_knowledge()
     
     # RAG STEP 1: RETRIEVE
+    ## Medical Knowledge Sources
+
+    # The current demo uses a curated knowledge base for common lab tests. In production, this would be aggregated from:
+
+    # - **MedlinePlus (NIH)** - Patient-friendly health information
+    # - **LOINC** - Standardized lab test codes and reference ranges  
+    # - **PubMed/NCBI** - Evidence-based medical literature
+    # - **Clinical guidelines** - Mayo Clinic, UpToDate, ARUP Consult
+
+    # Knowledge base would be updated regularly as medical guidelines evolve.
     retrieved_knowledge = retrieve_relevant_knowledge(lab_data['lab_results'], knowledge_base)
     
     # Build context from lab results
