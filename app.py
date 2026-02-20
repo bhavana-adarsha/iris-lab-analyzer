@@ -19,7 +19,7 @@ def load_sample_labs():
 
 def load_medical_knowledge():
     """Load medical knowledge base"""
-    with open('medical_knowledge.json', 'r') as f:
+    with open('sample_data/medical_knowledge.json', 'r') as f:
         return json.load(f)
 
 def retrieve_relevant_knowledge(lab_results, knowledge_base):
