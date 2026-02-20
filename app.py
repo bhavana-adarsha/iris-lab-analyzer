@@ -17,12 +17,57 @@ def load_sample_labs():
     with open('sample_data/lab_results.json', 'r') as f:
         return json.load(f)
 
+def load_medical_knowledge():
+    """Load medical knowledge base"""
+    with open('medical_knowledge.json', 'r') as f:
+        return json.load(f)
+
+def retrieve_relevant_knowledge(lab_results, knowledge_base):
+    """
+    RAG STEP 1: RETRIEVAL
+    Retrieve relevant medical knowledge for the specific tests in patient's labs
+    This is the 'R' in RAG - we're retrieving context before generation
+    """
+    relevant_knowledge = {}
+    
+    for lab in lab_results:
+        test_name = lab['test_name']
+        
+        # Retrieve knowledge for this specific test
+        if test_name in knowledge_base['tests']:
+            test_info = knowledge_base['tests'][test_name]
+            
+            # Only include relevant info based on abnormal status
+            relevant_info = {
+                'description': test_info['description']
+            }
+            
+            if lab['status'] == 'Low' and 'low_causes' in test_info:
+                relevant_info['causes'] = test_info['low_causes']
+                relevant_info['symptoms'] = test_info.get('low_symptoms', [])
+                relevant_info['actions'] = test_info.get('recommended_actions_low', [])
+            elif lab['status'] == 'High' and 'high_causes' in test_info:
+                relevant_info['causes'] = test_info['high_causes']
+                relevant_info['symptoms'] = test_info.get('high_symptoms', [])
+                relevant_info['actions'] = test_info.get('recommended_actions_high', [])
+            
+            relevant_knowledge[test_name] = relevant_info
+    
+    return relevant_knowledge
+
 def analyze_labs_with_gpt(lab_data):
     """
-    Analyze lab results using GPT-4
-    This demonstrates LLM integration with healthcare data
-    Production would use Azure OpenAI with BAA for HIPAA compliance
+    FULL RAG PIPELINE:
+    1. RETRIEVE relevant medical knowledge
+    2. AUGMENT prompt with retrieved context
+    3. GENERATE answer using GPT-4
     """
+    
+    # Load medical knowledge base
+    knowledge_base = load_medical_knowledge()
+    
+    # RAG STEP 1: RETRIEVE
+    retrieved_knowledge = retrieve_relevant_knowledge(lab_data['lab_results'], knowledge_base)
     
     # Build context from lab results
     lab_summary = []
@@ -36,7 +81,20 @@ def analyze_labs_with_gpt(lab_data):
         if lab['status'] != 'Normal':
             abnormal_results.append(lab)
     
-    # Create prompt with patient context
+    # RAG STEP 2: AUGMENT - Build enhanced prompt with retrieved knowledge
+    knowledge_context = "\n\nMEDICAL KNOWLEDGE BASE (use this to provide accurate explanations):\n"
+    
+    for test_name, info in retrieved_knowledge.items():
+        knowledge_context += f"\n{test_name}:\n"
+        knowledge_context += f"- What it is: {info['description']}\n"
+        
+        if 'causes' in info:
+            knowledge_context += f"- Common causes: {', '.join(info['causes'])}\n"
+        if 'symptoms' in info:
+            knowledge_context += f"- Symptoms: {', '.join(info['symptoms'])}\n"
+        if 'actions' in info:
+            knowledge_context += f"- Recommended actions: {', '.join(info['actions'])}\n"
+    
     prompt = f"""You are a helpful health assistant analyzing lab results. 
 
 Patient Information:
@@ -46,33 +104,51 @@ Patient Information:
 Lab Results:
 {chr(10).join(lab_summary)}
 
-Additional Notes: {lab_data.get('notes', 'None')}
+{knowledge_context}
 
-Please provide:
-1. A brief summary of overall health status (2-3 sentences)
-2. Explanation of any abnormal results in plain language
-3. 3-5 actionable recommendations
-4. What to discuss with their doctor
+Additional Clinical Notes: {lab_data.get('notes', 'None')}
+
+Please provide a comprehensive analysis using the medical knowledge provided above:
+
+1. **Overall Health Summary** (2-3 sentences)
+   
+2. **Abnormal Results Explained** 
+   For each abnormal result, explain in plain language:
+   - What the test measures and why it matters
+   - What might cause this result
+   - What symptoms to watch for
+   
+3. **Actionable Recommendations** (5-7 specific next steps)
+   - Dietary changes
+   - Lifestyle modifications  
+   - Follow-up tests to consider
+   - When to see a doctor
+   
+4. **Key Discussion Points for Your Doctor**
 
 IMPORTANT GUIDELINES:
-- Use simple, non-medical language
-- Never diagnose conditions
+- Use the medical knowledge base provided, don't rely only on your training
+- Use simple, non-medical language - explain like talking to a friend
+- Never diagnose conditions - say "may indicate" or "could be related to"
 - Always recommend consulting a healthcare provider
 - Be encouraging but honest about concerning results
 - Include appropriate medical disclaimers
 
-Format your response clearly with sections."""
+Format clearly with headers and bullet points."""
 
     try:
-        # Call GPT-4
+        # RAG STEP 3: GENERATE using GPT-4 with augmented prompt
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a helpful health information assistant. You provide clear explanations of lab results but never diagnose conditions. You always encourage patients to consult their healthcare provider."},
+                {
+                    "role": "system", 
+                    "content": "You are a helpful health information assistant. You explain lab results using provided medical knowledge. You never diagnose conditions. You always encourage patients to consult their healthcare provider. You use plain, simple language."
+                },
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=1000
+            max_tokens=1500
         )
         
         ai_analysis = response.choices[0].message.content
@@ -83,8 +159,9 @@ Format your response clearly with sections."""
             'analysis_text': ai_analysis,
             'abnormal_count': len(abnormal_results),
             'abnormal_tests': abnormal_results,
-            'model': 'GPT-4',
-            'disclaimer': 'This analysis is for informational purposes only and does not constitute medical advice. Always consult with your healthcare provider.'
+            'knowledge_sources_used': list(retrieved_knowledge.keys()),
+            'model': 'GPT-4 with RAG',
+            'disclaimer': 'This analysis uses medical knowledge databases combined with AI. It is for informational purposes only and does not constitute medical advice. Always consult with your healthcare provider.'
         }
         
     except Exception as e:

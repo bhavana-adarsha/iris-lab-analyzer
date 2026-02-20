@@ -1,0 +1,160 @@
+{
+  "tests": {
+    "Hemoglobin": {
+      "description": "Hemoglobin is a protein in red blood cells that carries oxygen throughout your body.",
+      "low_causes": [
+        "Iron deficiency anemia",
+        "Vitamin B12 or folate deficiency",
+        "Chronic disease",
+        "Blood loss"
+      ],
+      "low_symptoms": [
+        "Fatigue and weakness",
+        "Pale skin",
+        "Shortness of breath",
+        "Dizziness"
+      ],
+      "high_causes": [
+        "Dehydration",
+        "Living at high altitude",
+        "Smoking",
+        "Lung disease"
+      ],
+      "recommended_actions_low": [
+        "Check iron levels (ferritin, iron panel)",
+        "Evaluate for sources of bleeding",
+        "Consider iron supplementation",
+        "Increase iron-rich foods (red meat, spinach, beans)"
+      ]
+    },
+    "Glucose (Fasting)": {
+      "description": "Fasting glucose measures blood sugar levels after not eating for 8-12 hours. It screens for diabetes and prediabetes.",
+      "low_causes": [
+        "Too much insulin",
+        "Certain medications",
+        "Liver disease",
+        "Not eating enough"
+      ],
+      "high_causes": [
+        "Prediabetes (100-125 mg/dL)",
+        "Diabetes (≥126 mg/dL)",
+        "Insulin resistance",
+        "Stress or illness"
+      ],
+      "high_symptoms": [
+        "Increased thirst",
+        "Frequent urination",
+        "Blurred vision",
+        "Fatigue"
+      ],
+      "recommended_actions_high": [
+        "Consider HbA1c test for 3-month average",
+        "Reduce refined carbs and sugars",
+        "Increase physical activity",
+        "Monitor weight and waist circumference",
+        "May need oral diabetes medication or insulin"
+      ]
+    },
+    "Total Cholesterol": {
+      "description": "Total cholesterol is the sum of LDL (bad), HDL (good), and other lipids in your blood. High levels increase heart disease risk.",
+      "high_causes": [
+        "Diet high in saturated fats",
+        "Lack of exercise",
+        "Obesity",
+        "Genetics (familial hypercholesterolemia)",
+        "Age and gender"
+      ],
+      "high_symptoms": [
+        "Usually no symptoms",
+        "Can lead to heart attack or stroke over time"
+      ],
+      "recommended_actions_high": [
+        "Get lipid panel (LDL, HDL, triglycerides)",
+        "Calculate 10-year cardiovascular risk",
+        "Reduce saturated fat and trans fats",
+        "Increase fiber intake",
+        "Regular aerobic exercise",
+        "Consider statin therapy if risk is elevated"
+      ]
+    },
+    "LDL Cholesterol": {
+      "description": "LDL is 'bad' cholesterol that can build up in arteries and increase heart disease risk.",
+      "high_causes": [
+        "Diet high in saturated and trans fats",
+        "Genetics",
+        "Obesity",
+        "Sedentary lifestyle"
+      ],
+      "recommended_actions_high": [
+        "Reduce saturated fats to <7% of calories",
+        "Eliminate trans fats",
+        "Add plant sterols/stanols",
+        "Consider statin if cardiovascular risk is high",
+        "Target: <100 mg/dL (optimal), <70 mg/dL (very high risk)"
+      ]
+    },
+    "Triglycerides": {
+      "description": "Triglycerides are a type of fat in blood. High levels increase risk of heart disease and pancreatitis.",
+      "high_causes": [
+        "Excess calories, especially from sugar and alcohol",
+        "Obesity",
+        "Diabetes",
+        "Kidney disease",
+        "Certain medications"
+      ],
+      "recommended_actions_high": [
+        "Limit sugar and refined carbs",
+        "Reduce alcohol intake",
+        "Lose weight if overweight",
+        "Increase omega-3 fatty acids (fish, flax)",
+        "May need fibrate or niacin medication if very high"
+      ]
+    },
+    "Vitamin D": {
+      "description": "Vitamin D helps absorb calcium and supports bone health, immune function, and mood.",
+      "low_causes": [
+        "Insufficient sun exposure",
+        "Dark skin pigmentation",
+        "Age (decreased skin synthesis)",
+        "Obesity (fat stores vitamin D)",
+        "Malabsorption disorders"
+      ],
+      "low_symptoms": [
+        "Bone pain and muscle weakness",
+        "Fatigue",
+        "Mood changes",
+        "Increased infection risk"
+      ],
+      "recommended_actions_low": [
+        "Vitamin D supplementation (1000-2000 IU daily typical)",
+        "Increase sun exposure (15-30 min daily)",
+        "Eat vitamin D rich foods (fatty fish, fortified milk)",
+        "Target level: 30-50 ng/mL"
+      ]
+    },
+    "TSH": {
+      "description": "TSH (Thyroid Stimulating Hormone) regulates thyroid function. Abnormal levels indicate thyroid problems.",
+      "low_causes": [
+        "Hyperthyroidism (overactive thyroid)",
+        "Too much thyroid medication",
+        "Pituitary disorder"
+      ],
+      "high_causes": [
+        "Hypothyroidism (underactive thyroid)",
+        "Hashimoto's thyroiditis",
+        "Iodine deficiency"
+      ],
+      "high_symptoms": [
+        "Fatigue and weight gain",
+        "Cold intolerance",
+        "Constipation",
+        "Dry skin and hair loss"
+      ],
+      "recommended_actions_high": [
+        "Get full thyroid panel (Free T4, Free T3, antibodies)",
+        "May need levothyroxine (Synthroid)",
+        "Recheck TSH in 6-8 weeks after starting treatment"
+      ]
+    }
+  }
+}
