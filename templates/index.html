@@ -1,0 +1,23 @@
+<div class="ai-analysis">
+        <h2>🤖 AI-Powered Analysis (GPT-4)</h2>
+        
+        {% if analysis.success %}
+            <div style="white-space: pre-line; line-height: 1.6;">
+                {{ analysis.analysis_text }}
+            </div>
+        {% else %}
+            <p style="color: #e74c3c;"><strong>Note:</strong> AI analysis unavailable. Error: {{ analysis.error }}</p>
+            <p>{{ analysis.analysis_text }}</p>
+        {% endif %}
+
+        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+            <p style="margin: 0; font-size: 13px; color: #856404;">
+                <strong>⚠️ Medical Disclaimer:</strong> {{ analysis.disclaimer }}
+            </p>
+        </div>
+
+        <div style="margin-top: 15px; font-size: 12px; color: #7f8c8d;">
+            <p><strong>Powered by:</strong> {{ analysis.model }}</p>
+            <p><strong>Note:</strong> In production, this would use Azure OpenAI with Business Associate Agreement for HIPAA compliance.</p>
+        </div>
+    </div>
