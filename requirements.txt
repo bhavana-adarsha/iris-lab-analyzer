@@ -1,6 +1,5 @@
-pyarrow
-transformers
-torch
-requests
 flask
-dotenv
+openai
+python-dotenv
+requests
+apscheduler

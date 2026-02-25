@@ -1,33 +1,665 @@
-<div class="ai-analysis">
-        <h2>🤖 AI-Powered Analysis (GPT-4)</h2>
-        
-        {% if analysis.success %}
-            <div style="white-space: pre-line; line-height: 1.6;">
-                {{ analysis.analysis_text }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRIS Patient Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --iris: #7c3aed;
+            --iris-light: #ede9fe;
+            --iris-mid: #a78bfa;
+            --teal: #0d9488;
+            --teal-light: #ccfbf1;
+            --rose: #e11d48;
+            --rose-light: #ffe4e6;
+            --amber: #d97706;
+            --amber-light: #fef3c7;
+            --green: #16a34a;
+            --green-light: #dcfce7;
+            --slate: #1e293b;
+            --slate-mid: #475569;
+            --slate-light: #f8fafc;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 48px rgba(0,0,0,0.14);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--slate-light);
+            color: var(--slate);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 60%, #0d9488 100%);
+            padding: 28px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-brand { display: flex; align-items: center; gap: 14px; }
+        .header-logo {
+            width: 44px; height: 44px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+        }
+        .header-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 24px;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+        .header-subtitle { font-size: 13px; color: rgba(255,255,255,0.72); margin-top: 2px; }
+        .header-badge {
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* ── Layout ── */
+        .container { max-width: 1100px; margin: 0 auto; padding: 36px 24px; }
+
+        /* ── Patient Card ── */
+        .patient-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+            border-left: 4px solid var(--iris);
+        }
+        .patient-info { display: flex; align-items: center; gap: 18px; }
+        .patient-avatar {
+            width: 52px; height: 52px;
+            background: var(--iris-light);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+        }
+        .patient-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            color: var(--slate);
+        }
+        .patient-meta { font-size: 13px; color: var(--slate-mid); margin-top: 3px; }
+        .patient-meta span { margin-right: 16px; }
+
+        /* ── Nudge Button ── */
+        .nudge-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--iris), var(--teal));
+            color: white;
+            border: none;
+            padding: 13px 24px;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            white-space: nowrap;
+        }
+        .nudge-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45);
+        }
+        .nudge-btn:active { transform: translateY(0); }
+        .nudge-btn .btn-icon { font-size: 18px; }
+        .nudge-btn .spinner {
+            display: none;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        .nudge-btn.loading .btn-icon { display: none; }
+        .nudge-btn.loading .spinner { display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Lab Table ── */
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            color: var(--slate);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+        .card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-header h2 { font-size: 16px; font-weight: 600; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead { background: var(--slate-light); }
+        th {
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--slate-mid);
+        }
+        td { padding: 14px 20px; font-size: 14px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafbfc; }
+
+        .flag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .flag-low { background: var(--rose-light); color: var(--rose); }
+        .flag-high { background: var(--amber-light); color: var(--amber); }
+        .flag-normal { background: var(--green-light); color: var(--green); }
+
+        /* ── AI Analysis Card ── */
+        .ai-analysis {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+        .ai-analysis h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .analysis-body { white-space: pre-line; line-height: 1.75; font-size: 14px; color: var(--slate); }
+        .disclaimer-box {
+            margin-top: 20px;
+            padding: 14px 18px;
+            background: var(--amber-light);
+            border-left: 4px solid var(--amber);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #78350f;
+        }
+        .rag-box {
+            margin-top: 14px;
+            padding: 14px 18px;
+            background: var(--green-light);
+            border-left: 4px solid var(--green);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #14532d;
+        }
+        .rag-box .sources { font-size: 12px; margin-top: 4px; opacity: 0.8; }
+        .powered-by { margin-top: 12px; font-size: 12px; color: var(--slate-mid); }
+
+        /* ── Nudges Modal Overlay ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal {
+            background: var(--white);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 780px;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 60%, #0d9488 100%);
+            padding: 24px 28px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+        .modal-header-text h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            color: white;
+        }
+        .modal-header-text p { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 4px; }
+        .modal-close {
+            background: rgba(255,255,255,0.18);
+            border: none;
+            color: white;
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.3); }
+
+        .modal-body { padding: 28px; }
+
+        /* Headline + condition */
+        .nudge-headline {
+            background: var(--iris-light);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .nudge-headline .icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+        .nudge-headline p { font-size: 15px; line-height: 1.6; color: var(--slate); }
+        .nudge-condition {
+            display: inline-block;
+            background: var(--iris);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Nudge sections */
+        .nudge-section { margin-bottom: 24px; }
+        .nudge-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 14px;
+        }
+        .nudge-section-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .icon-diet { background: var(--green-light); }
+        .icon-lifestyle { background: #dbeafe; }
+        .icon-doctor { background: var(--rose-light); }
+
+        .nudge-section-title { font-weight: 700; font-size: 15px; color: var(--slate); }
+
+        .nudge-card {
+            background: var(--slate-light);
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 10px;
+            border-left: 3px solid transparent;
+        }
+        .nudge-card.diet-card { border-left-color: var(--green); }
+        .nudge-card.lifestyle-card { border-left-color: #3b82f6; }
+        .nudge-card.doctor-card { border-left-color: var(--rose); }
+
+        .nudge-card-tip { font-weight: 600; font-size: 14px; color: var(--slate); margin-bottom: 5px; }
+        .nudge-card-detail { font-size: 13px; color: var(--slate-mid); line-height: 1.55; }
+        .nudge-card-detail .label {
+            font-weight: 600;
+            color: var(--slate);
+            display: inline;
+        }
+
+        /* Loading state */
+        .nudge-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 0;
+            gap: 16px;
+            color: var(--slate-mid);
+            font-size: 14px;
+        }
+        .nudge-loading .big-spinner {
+            width: 40px; height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--iris);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Error state */
+        .nudge-error {
+            background: var(--rose-light);
+            border-radius: 12px;
+            padding: 20px;
+            color: var(--rose);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Encouragement footer */
+        .nudge-encouragement {
+            background: linear-gradient(135deg, var(--iris-light), var(--teal-light));
+            border-radius: 12px;
+            padding: 18px 20px;
+            font-size: 14px;
+            color: var(--slate);
+            line-height: 1.6;
+            font-style: italic;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* Modal disclaimer */
+        .modal-disclaimer {
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: var(--amber-light);
+            border-radius: 8px;
+            font-size: 12px;
+            color: #78350f;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="header-brand">
+        <div class="header-logo">🌸</div>
+        <div>
+            <div class="header-title">IRIS Patient Portal</div>
+            <div class="header-subtitle">AI-Powered Women's Health Platform</div>
+        </div>
+    </div>
+    <div class="header-badge">GPT-4 · RAG · FHIR</div>
+</div>
+
+<div class="container">
+
+    <!-- Patient Card -->
+    <div class="patient-card">
+        <div class="patient-info">
+            <div class="patient-avatar">👤</div>
+            <div>
+                <div class="patient-name">{{ patient.name }}</div>
+                <div class="patient-meta">
+                    <span>📅 Lab Date: {{ test_date }}</span>
+                    <span>🆔 MRN: {{ patient.mrn }}</span>
+                    <span>🩺 Dr. Sarah Johnson</span>
+                </div>
             </div>
+        </div>
+        <button class="nudge-btn" id="nudgeBtn" onclick="openNudges()">
+            <span class="btn-icon">💡</span>
+            <span class="btn-spinner spinner"></span>
+            Tips to Manage Your Symptoms
+        </button>
+    </div>
+
+    <!-- Lab Results Table -->
+    <div class="card">
+        <div class="card-header">
+            <h2>🧪 Lab Results</h2>
+            <span style="font-size:13px; color: var(--slate-mid);">{{ test_date }}</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Test</th>
+                    <th>Result</th>
+                    <th>Reference Range</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lab in labs %}
+                <tr>
+                    <td style="font-weight:500;">{{ lab.test_name }}</td>
+                    <td>{{ lab.value }} <span style="color:var(--slate-mid); font-size:12px;">{{ lab.unit }}</span></td>
+                    <td style="color:var(--slate-mid); font-size:13px;">{{ lab.reference_range }}</td>
+                    <td>
+                        {% if lab.status == 'Low' %}
+                            <span class="flag flag-low">↓ Low</span>
+                        {% elif lab.status == 'High' %}
+                            <span class="flag flag-high">↑ High</span>
+                        {% else %}
+                            <span class="flag flag-normal">✓ Normal</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- AI Analysis -->
+    <div class="ai-analysis">
+        <h2>🤖 AI-Powered Analysis <span style="font-size:14px; font-weight:400; color:var(--slate-mid);">(GPT-4)</span></h2>
+
+        {% if analysis.success %}
+            <div class="analysis-body">{{ analysis.analysis_text }}</div>
         {% else %}
-            <p style="color: #e74c3c;"><strong>Note:</strong> AI analysis unavailable. Error: {{ analysis.error }}</p>
+            <p style="color: var(--rose);"><strong>Note:</strong> AI analysis unavailable. Error: {{ analysis.error }}</p>
             <p>{{ analysis.analysis_text }}</p>
         {% endif %}
 
-        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
-            <p style="margin: 0; font-size: 13px; color: #856404;">
-                <strong>⚠️ Medical Disclaimer:</strong> {{ analysis.disclaimer }}
-            </p>
+        <div class="disclaimer-box">
+            <strong>⚠️ Medical Disclaimer:</strong> {{ analysis.disclaimer }}
         </div>
 
-        <div style="margin-top: 15px; font-size: 12px; color: #7f8c8d;">
-            <p><strong>Powered by:</strong> {{ analysis.model }}</p>
-            <p><strong>Note:</strong> In production, this would use Azure OpenAI with Business Associate Agreement for HIPAA compliance.</p>
+        <div class="rag-box">
+            <strong>🎯 RAG (Retrieval Augmented Generation):</strong>
+            This analysis retrieved medical knowledge for {{ analysis.knowledge_sources_used|length }} tests from our knowledge base,
+            then augmented GPT-4's prompt with this context for more accurate, evidence-based explanations.
+            <div class="sources">Knowledge sources used: {{ analysis.knowledge_sources_used|join(', ') }}</div>
+        </div>
+
+        <div class="powered-by">
+            <strong>Powered by:</strong> {{ analysis.model }} &nbsp;·&nbsp;
+            In production: Azure OpenAI with Business Associate Agreement for HIPAA compliance.
         </div>
     </div>
-    <div style="margin-top: 15px; padding: 15px; background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 4px;">
-            <p style="margin: 0; font-size: 13px;">
-                <strong>🎯 RAG (Retrieval Augmented Generation):</strong> 
-                This analysis retrieved medical knowledge for {{ analysis.knowledge_sources_used|length }} tests from our knowledge base, 
-                then augmented GPT-4's prompt with this context for more accurate, evidence-based explanations.
-            </p>
-            <p style="margin: 5px 0 0 0; font-size: 12px; color: #2e7d32;">
-                Knowledge sources used: {{ analysis.knowledge_sources_used|join(', ') }}
-            </p>
+
+</div><!-- /container -->
+
+
+<!-- ── Nudges Modal ── -->
+<div class="modal-overlay" id="nudgeModal" onclick="closeOnBackdrop(event)">
+    <div class="modal" id="nudgeModalBox">
+        <div class="modal-header">
+            <div class="modal-header-text">
+                <h3>💡 Tips to Manage Your Symptoms</h3>
+                <p>Personalized recommendations based on your latest lab results</p>
+            </div>
+            <button class="modal-close" onclick="closeNudges()">✕</button>
         </div>
+        <div class="modal-body" id="nudgeContent">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let nudgesLoaded = false;
+    let cachedNudges = null;
+
+    function openNudges() {
+        document.getElementById('nudgeModal').classList.add('open');
+        if (!nudgesLoaded) {
+            fetchNudges();
+        }
+    }
+
+    function closeNudges() {
+        document.getElementById('nudgeModal').classList.remove('open');
+    }
+
+    function closeOnBackdrop(e) {
+        if (e.target === document.getElementById('nudgeModal')) closeNudges();
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeNudges();
+    });
+
+    async function fetchNudges() {
+        const btn = document.getElementById('nudgeBtn');
+        const content = document.getElementById('nudgeContent');
+
+        btn.classList.add('loading');
+        content.innerHTML = `
+            <div class="nudge-loading">
+                <div class="big-spinner"></div>
+                <div>Generating your personalized tips with GPT-4…</div>
+            </div>`;
+
+        try {
+            const res = await fetch('/api/nudges');
+            if (!res.ok) throw new Error(`Server error: ${res.status}`);
+            const data = await res.json();
+            cachedNudges = data;
+            nudgesLoaded = true;
+            renderNudges(data);
+        } catch (err) {
+            content.innerHTML = `
+                <div class="nudge-error">
+                    <strong>⚠️ Could not load tips right now.</strong><br>
+                    <span style="font-size:12px; margin-top:6px; display:block;">${err.message}</span>
+                </div>`;
+        } finally {
+            btn.classList.remove('loading');
+        }
+    }
+
+    function renderNudges(data) {
+        const nc = data.nudge_content;
+        const nudges = nc.nudges;
+
+        const dietHTML   = buildCards(nudges.diet,              'diet-card',      false);
+        const lifeHTML   = buildCards(nudges.lifestyle,         'lifestyle-card', false);
+        const docHTML    = buildCards(nudges.talk_to_your_doctor,'doctor-card',   true);
+
+        document.getElementById('nudgeContent').innerHTML = `
+            <!-- Headline -->
+            <div class="nudge-headline">
+                <div class="icon">🌿</div>
+                <div>
+                    <p>${nc.headline}</p>
+                    <span class="nudge-condition">${data.focus_condition}</span>
+                </div>
+            </div>
+
+            <!-- Diet -->
+            <div class="nudge-section">
+                <div class="nudge-section-header">
+                    <div class="nudge-section-icon icon-diet">🥗</div>
+                    <span class="nudge-section-title">Diet & Nutrition</span>
+                </div>
+                ${dietHTML}
+            </div>
+
+            <!-- Lifestyle -->
+            <div class="nudge-section">
+                <div class="nudge-section-header">
+                    <div class="nudge-section-icon icon-lifestyle">🏃‍♀️</div>
+                    <span class="nudge-section-title">Lifestyle</span>
+                </div>
+                ${lifeHTML}
+            </div>
+
+            <!-- Talk to doctor -->
+            <div class="nudge-section">
+                <div class="nudge-section-header">
+                    <div class="nudge-section-icon icon-doctor">🩺</div>
+                    <span class="nudge-section-title">Talk to Your Doctor</span>
+                </div>
+                ${docHTML}
+            </div>
+
+            <!-- Encouragement -->
+            <div class="nudge-encouragement">💜 ${nc.encouragement}</div>
+
+            <!-- Disclaimer -->
+            <div class="modal-disclaimer">
+                <strong>⚠️ Disclaimer:</strong> ${data.disclaimer}
+            </div>
+        `;
+    }
+
+    function buildCards(items, cardClass, isDoctor) {
+        return items.map(item => {
+            if (isDoctor) {
+                return `
+                <div class="nudge-card ${cardClass}">
+                    <div class="nudge-card-tip">${item.bring_up}</div>
+                    <div class="nudge-card-detail">
+                        <span class="label">Why: </span>${item.why}
+                    </div>
+                </div>`;
+            } else {
+                return `
+                <div class="nudge-card ${cardClass}">
+                    <div class="nudge-card-tip">${item.tip}</div>
+                    <div class="nudge-card-detail">
+                        <span class="label">Why: </span>${item.reason}<br>
+                        <span class="label">Try this: </span>${item.try_this}
+                    </div>
+                </div>`;
+            }
+        }).join('');
+    }
+</script>
+
+</body>
+</html>

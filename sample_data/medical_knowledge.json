@@ -27,6 +27,104 @@
         "Increase iron-rich foods (red meat, spinach, beans)"
       ]
     },
+    "Serum Iron": {
+      "description": "Serum iron measures the amount of iron circulating in your blood. It reflects how much iron is immediately available to your body for making red blood cells.",
+      "low_causes": [
+        "Iron deficiency anemia",
+        "Heavy menstrual periods",
+        "Poor dietary iron intake",
+        "Chronic blood loss (GI tract)",
+        "Pregnancy (increased iron demand)"
+      ],
+      "low_symptoms": [
+        "Fatigue and low energy",
+        "Cold hands and feet",
+        "Brittle nails",
+        "Hair thinning",
+        "Difficulty concentrating (brain fog)"
+      ],
+      "recommended_actions_low": [
+        "Eat iron-rich foods at every meal (lentils, spinach, lean red meat, fortified cereals)",
+        "Pair iron foods with Vitamin C to boost absorption (lemon juice, bell peppers, orange juice)",
+        "Avoid tea and coffee within 1 hour of iron-rich meals — tannins block absorption",
+        "Ask your doctor about iron supplementation",
+        "Check for underlying causes such as heavy periods or GI bleeding"
+      ]
+    },
+    "Ferritin": {
+      "description": "Ferritin is the storage form of iron in your body. It reflects your iron reserves — think of it as your iron 'savings account.' Low ferritin is often the earliest sign of iron deficiency, even before anemia develops.",
+      "low_causes": [
+        "Iron deficiency (most common cause in women)",
+        "Heavy or prolonged menstrual bleeding",
+        "Inadequate dietary iron",
+        "Celiac disease or other malabsorption conditions",
+        "Frequent blood donation"
+      ],
+      "low_symptoms": [
+        "Persistent fatigue even with adequate sleep",
+        "Restless leg syndrome",
+        "Hair loss or thinning",
+        "Difficulty regulating body temperature",
+        "Reduced exercise tolerance"
+      ],
+      "recommended_actions_low": [
+        "Prioritize iron-rich foods daily: red lentils, chickpeas, tofu, fortified oatmeal, dark leafy greens",
+        "Cook in a cast iron pan — it adds small amounts of iron to food",
+        "Discuss oral iron supplementation with your doctor (ferrous sulfate is common)",
+        "Retest ferritin in 8-12 weeks after starting dietary changes or supplements",
+        "Discuss whether heavy menstrual periods may be the underlying cause"
+      ]
+    },
+    "TIBC": {
+      "description": "TIBC (Total Iron Binding Capacity) measures how well your blood can transport iron. When iron stores are low, your body produces more transport proteins to grab any available iron — so TIBC goes up when iron is low.",
+      "high_causes": [
+        "Iron deficiency anemia (most common cause of high TIBC)",
+        "Pregnancy",
+        "Oral contraceptive use"
+      ],
+      "low_causes": [
+        "Chronic inflammation",
+        "Liver disease",
+        "Malnutrition",
+        "Iron overload (hemochromatosis)"
+      ],
+      "recommended_actions_high": [
+        "High TIBC combined with low serum iron and low ferritin confirms iron deficiency — focus on replenishing iron stores",
+        "Follow dietary and supplementation guidance for iron deficiency",
+        "Retest the full iron panel (iron, ferritin, TIBC) together after 8-12 weeks of treatment"
+      ]
+    },
+    "Transferrin Saturation": {
+      "description": "Transferrin saturation shows what percentage of your iron transport proteins are actually carrying iron. A low percentage means your transport proteins are mostly empty — a clear sign that iron is in short supply.",
+      "low_causes": [
+        "Iron deficiency anemia",
+        "Chronic disease anemia",
+        "Internal or menstrual blood loss"
+      ],
+      "recommended_actions_low": [
+        "Combine results with ferritin and serum iron for complete picture",
+        "Address dietary iron intake and discuss supplements with your doctor",
+        "Investigate any ongoing blood loss"
+      ]
+    },
+    "MCV": {
+      "description": "MCV (Mean Corpuscular Volume) measures the average size of your red blood cells. Small red blood cells (low MCV) are a classic sign of iron deficiency — your body makes smaller cells when it doesn't have enough iron to fill them.",
+      "low_causes": [
+        "Iron deficiency anemia",
+        "Thalassemia (inherited condition)",
+        "Chronic disease"
+      ],
+      "low_symptoms": [
+        "Fatigue",
+        "Weakness",
+        "Pale appearance"
+      ],
+      "recommended_actions_low": [
+        "Low MCV alongside low ferritin and serum iron confirms iron deficiency anemia",
+        "Iron supplementation and dietary changes typically normalize MCV over 2-3 months",
+        "Rule out thalassemia trait if iron stores are normal despite low MCV"
+      ]
+    },
     "Glucose (Fasting)": {
       "description": "Fasting glucose measures blood sugar levels after not eating for 8-12 hours. It screens for diabetes and prediabetes.",
       "low_causes": [
